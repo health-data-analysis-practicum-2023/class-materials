@@ -74,7 +74,7 @@ What is the risk of smoking-caused disease, like lung cancer (LC) and coronary h
 **To address each question we want to construct:**
 
 * A data display (graph or table)
-* A statistical analysis (with interprepration)
+* A statistical analysis (with interpretation)
 
 We will answer these questions using data from the National Medical Expenditures Survey (NMES).
 
@@ -272,10 +272,6 @@ Do these new tables allow us to compare the risk of disease for smokers and non-
 
 What we really want is a table where the proportions add up to 1 within the smoking groups, not across all four of the groups.  We can do this by using the `group_by()` option.  If we group by `lc5`, then our proportions add up to 1 within the LC groups.  If we group by `eversmk`, then our proportions add up to 1 within the smoking groups:
 ```{r}
-nmes_data %>%
-  count(lc5, eversmk) %>%
-  mutate(prop = n/sum(n))
-
 nmes_data %>%
   count(lc5, eversmk) %>%
   group_by(lc5) %>%
