@@ -258,7 +258,7 @@ nmes_data <- nmes_data %>%
          educate = factor(educate, levels = c("1", "2", "3", "4"), labels = c("College Grad", "Some College", "HS Grad", "Other")))
 
 ### Below is the code I used to display my data in a table.
-library (knitr)
+library (kableExtra)
 nmes_data %>%
   count(lc5, eversmk, poor, educate) %>%
   group_by(eversmk, poor, educate) %>%
