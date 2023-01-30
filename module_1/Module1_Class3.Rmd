@@ -77,8 +77,9 @@ ggplot(data = nmes_data) +
 ### Display 2
 
 ```{r echo = FALSE}
-nmes_data_raw <- read_csv("module_1/nmesUNPROC.csv")
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
 
+###create a disease variable to combine lung cancer and CHD. recode eversmk, poor, and female variables to have levels with descriptive labels 
 nmes_data <- nmes_data %>%
   mutate(disease = ifelse(lc5 == 1 | chd5 == 1, "disease", "no disease"),
          disease = factor(disease, levels =c("no disease", "disease"), labels = c("no CHD or lung cancer", "CHD or lung cancer")),
@@ -92,8 +93,6 @@ my_table <- nmes_data %>%
   count(disease, eversmk, female, poor) %>%
   group_by(eversmk, female, poor) %>%
   mutate(prop = n/sum(n))
-
-my_table
 
 ###data display of risk of disease comparing smokers and non-smokers stratified by poverty status and sex
 ggplot(data = my_table) + 
@@ -382,6 +381,20 @@ my_table %>%
   geom_bar(aes(x = eversmk, y = percent, fill = disease), stat = "identity") + 
   geom_text(aes(x = eversmk, y = percent, label = percent))
 ```
+
+
+#### Quick aside: including 0's in a table
+
+If you want your table to include the combinations of levels that have no people in them, you want to include the argument `.drop = FALSE` to the call to `count`:
+
+```{r}
+
+nmes_data %>%
+  count(eversmk, disease, educate, .drop=FALSE) %>%
+  group_by(eversmk, educate) %>%
+  mutate(percent =round(n/sum(n)*100,1))
+```
+
 
 ### Stratifying your graph by more than one variable
 
