@@ -263,7 +263,8 @@ nmes_data %>%
   count(lc5, eversmk, poor, educate) %>%
   group_by(eversmk, poor, educate) %>%
   mutate(prop = n/sum(n)) %>%
-  kable(digits = 4)
+  kable(digits = 4) %>%
+  kable_styling()
 ### I decided to group by the variables eversmk, poor, and educate. I chose to do this because the proportions displayed are the probability of having/not having lung cancer given a certain smoking status, poverty level and education status.
 
 ```
