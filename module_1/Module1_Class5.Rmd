@@ -1,0 +1,704 @@
+---
+title: "Class 1-5: Discussion of results for Question 1-1"
+author: "Health Data Analysis Practicum (AS.280.347)"
+date: "February 6, 2023"
+output: 
+  html_document:
+    toc: true
+    toc_float: 
+      toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+knitr::opts_knit$set(root.dir = "/cloud/project")
+```
+
+## Preliminaries
+
+Again, first we load the packages that we will be using in this document.  It's good practices to load packages as the beginning so they are all in the same place.  If you decide later you need an additional package, add it to the top of the document!
+```{r}
+library(tidyverse)  # core group of tidyverse packages
+library(kableExtra)  # to make nice tables
+library(broom)   # for tidy model output
+```
+
+## Module 1: Smoking and the risk of disease
+
+Questions of interest:
+
+* **Question 1.1: ** How does the risk of disease compare for smokers and otherwise similar non-smokers?
+
+<center>
+![](Q1_dag.png){width=500px}
+</center>
+
+* **Queston 1.2: ** Does the contribution of smoking to the risk of disease vary by sex or socio-economic status (SES)?
+
+<center>
+![](Q2_dag.png){width=500px}
+</center>
+
+To address each question we want:
+
+* A data display (graph or table)
+* A statistical analysis (with interprepration)
+
+We will answer these questions using data from the National Medical Expenditures Survey (NMES)
+
+## Discussion of NMES logistic regression results for Question 1-1
+
+In your breakout groups, take 20-25 minutes to discuss the following sets of logistic regression results and interpretations.  Looking at all 8 sets of results/interpretations, answer the following questions:
+
+(1) In order to address the comparison of interest between smokers and non-smokers, which variable **must** be included in the model?
+
+(2) In order to allow for comparison between smokers and **otherwise similar** non-smokers, what must be included in the model?  What must be included in the interpretation?
+
+(3) To address our question of interest, should we interpret **all** the coefficients in the regression model?  Or just some of them?
+
+(4) To address our question of interest, is it better to present/interpret the regression coefficients or the odds ratios?
+
+(5) To address our question of interest, how can we include information about the significance of the relationship of interest in our interpretation?
+
+(6) If you were to create a nice succinct table of results to communicate the relevant information from the R output to the reader, what pieces of information would you include? What could be excluded?  What aesthetic choices would you make when presenting the information in the table and in the text?
+
+(7) For a variable like age, should we include it in our regression model in its continuous form (see Results 2 and 8) or in a categorical form (see Results 1, 5, and 6)?  Why?
+
+(8) Should the variables used to determine "otherwise similar" in the regression model match the variables used to determine "otherwise similar" in the data display (graph)?  Why or why not?
+
+(9) We would like you to be **numerate** in your interpretations of your analysis results.  What do we mean by numerate and which interpretations below do a good job of being numerate?
+
+(10) Are there any interpretations or results shown below that you think are technically incorrect?
+
+
+### Results 1
+
+**Holding age and education status constant, smokers have a 2.087 times greater odds of developing lung disease or CHD than otherwise similar nonsmokers. This odds ratio is statistically significant since the p-value for the smoking status predictor is less than 0.05. Since this odds ratio is statistically significant, it can be said that smokers have a significantly greater risk of disease than nonsmokers who share the same age range and education status.**
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+#lc5 and chd5 were not recoded here so they combined
+#into one disease variable
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Nonsmoker", "Smoker")),
+         educate = factor(educate, levels = c("1", "2", "3", "4"), labels = c("College Graduatee", "Some College", "HS graduate", "Other")),
+         female = factor(female, levels = c("1", "0"), 
+                         labels = c("Female", "Male")),
+         current = factor(current, levels = c("0", "1"),
+                          labels = c("Not current smoker", "Current smoker")),
+         former = factor(former, levels = c("0", "1"),
+                          labels = c("Not former smoker", "Former smoker")),
+         beltuse = factor(beltuse, levels = c("1", "2", "3"), labels = c("rare", "some", "always/almost always")),
+         marital = factor(marital, levels = c("1", "2", "3", "4", "5"), labels = c("married", "widowed", "divorced", "separated", "never married")), 
+         poor = factor(poor, levels = c("0", "1"), labels = c("Not Poor", "Poor"))
+         )
+```
+
+```{r}
+# code for logistic regression
+nmes_data<- read_csv("nmesUNPROC.csv")
+nmes_data$Disease = nmes_data$lc5 | nmes_data$chd5
+nmes_data$age = cut(nmes_data$age, c(0, 17, 44, 64, Inf),  include.lowest = TRUE)
+
+model1 <- glm(Disease ~ eversmk + age + educate, family=binomial(link="logit"), data=nmes_data)
+
+summary(model1)
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", conf.low, ", ", conf.high, ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+
+```
+
+### Results 2
+
+**Risk of having MSCDs among ever smokers is 1.94 times greater than the non-smokers. There are no significant risk of diseases among ever smokers who received college education. Among ever smokers, those who graduated highschool have the risk of 1.52 times greater than the similar never smokers. Ever smokers who are in other education categories are 2.59 times more likely to have MSCDs compared to otherwise similar individuals.**
+
+```{r echo = FALSE}
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Never smoker", "Ever smoker")), 
+         #Rename eversmk variable
+         diseases = factor(chd5==1 | lc5==1, levels = c(FALSE, TRUE), labels = c("No MSCDs", "MSCD")), 
+         #Combine chd and lc5 variables to a single diseases variable
+         educate = factor(educate, levels = c("1", "2", "3", "4"), 
+                          labels = c("College graduatee", "Some college", "HS grad", "Other"))) 
+         #Rename educate variable 
+```
+
+```{r}
+model1 <- glm(diseases ~ eversmk + educate, family=binomial(link="logit"), data=nmes_data)
+
+summary(model1)
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", conf.low, ", ", conf.high, ")")) %>%
+  select(Term = term, OR = estimate, 'p-value' = p.value, '95% CI' = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+```
+
+### Results 3
+
+
+**For𝛽1 with a value of 0.7732, compares smokers to non-smokers, while holding age category(30-60), age category(>60), and poverty status constant. Those who smoke, have a 0.7732 increase in log odds of death. In other words, since 0.7732 is a positive value, we can infer that being a smoker makes a person at risk for a major smoking caused disease. For 𝛽1, zero is not in the 95% CI of (1.63, 2.89) which means being a smoker is statistically significant, in other words, those who smoke have a higher risk of MSCD than those who have never smoked.**
+
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>% 
+  mutate(disease = factor(lc5==1|chd5 == 1, 
+                          levels=c(FALSE, TRUE), 
+                          labels=c("No disease", "Disease")),
+                   eversmk = factor(eversmk, levels = c("0", "1"), 
+                          labels = c("Never smoker", "Ever smoker")), 
+                   ageCat = cut(age, breaks=c(0,40,65,99), 
+                          labels = c("Age < 30", "Age 30-60", "Age > 60")),
+                  poor= factor(poor, levels =c ("0", "1"), 
+                          labels =c("Not poor", "poor")))
+```
+
+```{r}
+# code for logistic regression
+model1 <- glm(disease ~ eversmk + ageCat + poor, 
+              family=binomial(link="logit"), data= nmes_data)
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", round(conf.low,2), ", ", round(conf.high,2), ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  mutate(Term=c("Ever Smoker", "Age 30-60", "Age >60", "Poor"))%>%
+  kable(digits = 3, format = "markdown")
+
+summary(model1)
+```
+
+### Results 4
+
+**The odds ratio of having disease for ever smokers is 1.892 times greater than never smokers when holding poverty status and education level constant. The odds ratio of having disease for those that are poor is 4.827 times greater than those that are not poor, holding smoking status and education level constant. The difference in the odds of disease is not statistically significant (p value > 0.05) by the different education levels, holding smoking status and education level constant.**
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor(eversmk, 
+                   levels = c("0", "1"), 
+                   labels = c("Never smoker", "Ever smoker")),
+         disease = factor(lc5 == 1 | chd5 == 1, 
+                   levels=c(FALSE, TRUE),
+                   labels=c("No disease", "Disease")),
+         poor = factor(poor,
+                   levels = c("0", "1"),
+                   labels = c("Not poor", "Poor")),
+         educate = factor(educate,
+                   levels = c("1", "2", "3", "4"),
+                   labels = c("College graduate", "Some college", "HS graduate", "Other"))
+         )
+
+```
+
+```{r}
+model1 <- glm(disease ~ eversmk + poor + educate, family = binomial(link="logit"), data=nmes_data)
+
+summary(model1)
+
+tidy(model1) %>%
+  kable(digits = 3, format = "markdown")
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", conf.low, ", ", conf.high, ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+```
+
+### Results 5
+
+**The odds of disease for ever-smokers holding sex & BMI category the same is 1.746 times or 74.6% higher than the odds for never-smokers. The odds of disease for female holding smoking status & BMI category the same is 0.696 times higher than the odds for males. The odds of disease for individuals with a underweight BMI holding smoking status and sex the same is 1.398 times higher than the the odds for healthy individuals. The odds of disease for individuals with a overweight BMI holding smoking status and sex the same is 1.189 times higher than the the odds for healthy individuals. The odds of disease for individuals with a obese BMI holding smoking status and sex the same is 1.038 times higher than the the odds for healthy individuals.**
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor (eversmk, levels = c("0","1"), labels = c("Never Smoker", "Ever Smoker")),
+         lc5 = factor(lc5, levels = c("0", "1"), labels = c("No LC", "LC")),
+         chd5 = factor(chd5, levels = c("0","1"), labels = c("No CHD", "CHD")),
+         female = factor(female, levels = c("0", "1"), labels = c("Male", "Female"))
+  )
+
+nmes_data <- nmes_data %>%
+  mutate(Sex = factor(female))
+
+### combine lc5 and chd5 to create disease variable
+nmes_data <- nmes_data %>%
+  mutate(Disease = factor(lc5 == "LC" | chd5 == "CHD", 
+                          levels=c(FALSE, TRUE), 
+                          labels=c("No disease", "Disease")))
+
+###Creating BMI cat
+nmes_data <- nmes_data %>%
+  mutate(BMI_cat = case_when(
+    bmi < 18.5 ~ "Underweight",
+    bmi >= 18.5 & bmi < 25 ~ "Healthy",
+    bmi >= 25 & bmi < 30 ~ "Overweight",
+    bmi >= 30 ~ "Obesity",))
+
+nmes_data <- nmes_data %>% 
+  mutate(bmi_cat = cut(bmi,
+                      breaks = c(0, 18.5, 25, 30, 100),
+                      labels = c("Underweight", "Healthy", "Overweight", "Obesity")))
+
+```
+
+```{r}
+# code for logistic regression
+model1 <- glm(Disease ~ eversmk + Sex + BMI_cat, family=binomial(link="logit"), data=nmes_data)
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", conf.low, ", ", conf.high, ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+```
+
+### Results 6
+
+**According to the model, the odds of disease for ever-smokers is 1.71 times the odds of death for never-smokers, holding poverty status and sex constant. The 95% confidence interval for this coefficient is 95% CI (1.296, 2.66). Since 0 is not included in this interval, ever-smoking status is a statistically significant predictor of disease (either LD or CHD) among otherwise similar similar individuals in terms of sex and poverty status. Therefore, the risk of disease in ever-smokers is significantly greater than in otherwise similar never-smokers.**
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Never smoker", "Ever smoker")),
+         lc5 = factor(lc5, levels = c("0", "1"), labels = c("No LC", "LC")),
+         chd5 = factor(chd5, levels = c("0", "1"), labels = c("No CHD", "CHD")), 
+         female = factor(female, levels = c("0", "1"), labels = c("Male", "Female")), 
+         poor = factor(poor, levels = c("0", "1"), labels = c("Not Poor", "Poor")))
+
+## Create a disease variable with meaningful labels
+nmes_data <- nmes_data %>%
+  mutate(disease = factor(lc5 == "LC" | chd5 == "CHD", 
+                          levels=c(FALSE, TRUE), 
+                          labels=c("No disease", "Disease")))
+```
+
+```{r}
+model1 <- glm(disease ~ eversmk + female + poor, family=binomial(link="logit"), data=nmes_data)
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.low = round(conf.low, 3), conf.high = round(conf.high, 3))%>%
+  mutate(conf.int = paste0("(", conf.low, ", ", conf.high, ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+```
+
+
+### Results 7
+
+**The coefficient of the eversmkEver smoker term represents the log(OR) of smokers to non smokers when all other factors, in this case education level and sex, are held constant. The log(OR) is 0.57935 so the OR is 1.785. The 95% confidence interval for the OR is (1.359, 2.357) and so the OR is statistically significant since 0 is not in the CI. Therefore, smokers are 1.785 times more at risk for disease compared to otherwise similar non-smokers.**
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Never smoker", "Ever smoker")),
+         lc5 = factor(lc5, levels = c("0", "1"), labels = c("No LC", "LC")),
+         chd5 = factor(chd5, levels = c("0", "1"), labels = c("No CHD", "CHD")),
+         female = factor(female, levels = c("0", "1"), labels = c("Male", "Female")), 
+         educate = factor(educate, levels = c("1", "2", "3", "4"), labels = c("College Graduate", "Some College", "HS Grad", "Other")))
+
+nmes_data <- nmes_data %>%
+  mutate(disease = factor(lc5 == "LC" | chd5 == "CHD",
+                          levels=c(FALSE, TRUE),
+                          labels=c("No disease", "Disease")))
+
+```
+
+```{r}
+my_model <- glm(disease ~ eversmk + educate + female, family=binomial(link="logit"), data=nmes_data)
+
+###names(my_model$coefficients) <- c('Intercept', 'eversmk','Some College', 'HS Grad', 'Other', 'female')
+
+summary(my_model)
+
+my_model %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", round(conf.low,3), ", ", round(conf.high,3), ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+```
+
+### Results 8
+
+**In the regression model I found, the odds ratio calculated for eversmokers was 1.709 keeping poverty status and sex constant. This means that eversmokers, regardless of sex or poverty status have a 1.709 chance of getting lung disease or heart disease versus someone who had never smoked. The coefficient for poverty of 5.109 means that someone who is poor has a 5.109 times greater risk of having a disease than someone who is not poor. The 0.665 coefficient for femalefemale means that a female has a 0.665 chance of having a disease compared to a male who has smoking status and poverty status constant. All the odds ratios calculated had p values less than 0.005 which means they are statically significant values.**
+
+```{r echo = FALSE}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>%
+  mutate(disease = ifelse(lc5 == 1 | chd5 == 1, "disease", "no disease"),
+         disease = factor(disease, levels =c("no disease", "disease"), labels = c("no CHD or lung cancer", "CHD or lung cancer")),
+         eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Never smoker", "Ever smoker")),
+         poor = factor(poor, levels = c("0", "1"), labels = c("not poor", "poor")),
+         female = factor(female, levels = c("0", "1"), labels = c("male", "female")),
+         )
+#recoded poor and female variables so they are not just 0 and 1 in the column axis
+```
+
+```{r}
+model1 <- glm(disease ~ eversmk + female + poor, family=binomial(link="logit"), data=nmes_data)
+
+tidy(model1) %>% kable(digits = 3, format = "markdown")
+
+model1 %>%
+  tidy(exponentiate = TRUE, conf.int = TRUE, conf.level = 0.96) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(conf.int = paste0("(", conf.low, ", ", conf.high, ")")) %>%
+  select(Term = term, OR = estimate, `p-value` = p.value, `95% CI` = conf.int) %>%
+  kable(digits = 3, format = "markdown")
+```
+
+
+## R notes based Assignment 1-2
+
+We're including some notes here on aesthetics for improving your tables/displays as we start to work to a final project report.  You should also feel free to ask questions on Piazza if there is something you would like us to help you learn how to do!
+
+### Recoding the data
+```{r}
+nmes_data <- read_csv("module_1/nmesUNPROC.csv")
+
+nmes_data <- nmes_data %>%
+  mutate(eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Never smoker", "Ever smoker")),
+         lc5 = factor(lc5, levels = c("0", "1"), labels = c("No LC", "LC")),
+         chd5 = factor(chd5, levels = c("0", "1"), labels = c("No CHD", "CHD")),
+         female = factor(female, levels= c("0", "1"), labels = c("Male", "Female")),
+         current = factor(current, levels= c("0", "1"), labels = c("Not current smoker", "Current smoker")),
+         former = factor(former, levels= c("0", "1"), labels = c("Not former smoker", "Former smoker")),
+         beltuse = factor(beltuse, levels= c("1", "2", "3"), labels = c("Rare", "Some", "Almost always")),
+         educate = factor(educate, levels= c("1", "2", "3", "4"), labels = c("College grad", "Some college", "HS grad", "Other")),
+         marital = factor(marital, levels= c("1", "2", "3", "4", "5"), labels = c("Married", "Widowed", "Divorced", "Separated", "Never married")),
+         poor = factor(poor, levels= c("0", "1"), labels = c("Not poor", "Poor"))
+         )
+
+nmes_data <- nmes_data %>%
+  mutate(disease = factor(lc5 == "LC" | chd5 == "CHD", 
+                          levels=c(FALSE,TRUE), 
+                          labels=c("No MSCD", "MSCD")))
+```
+
+### Using knitr/kableExtra and the pander package for tables
+
+We already talked about using the `kable()` function (from the `knitr` package) to make your tables look nicer:
+
+Original:
+```{r}
+nmes_data %>%
+  count(disease)
+```
+
+Nicer:
+```{r}
+nmes_data %>%
+  count(disease) %>%
+  kable(format = "pipe")
+```
+
+You can also add a caption to a table directly with the `kable()` function:
+```{r}
+nmes_data %>%
+  count(disease) %>%
+  kable(format = "pipe",
+        caption = "Table 1: Number of individuals with and without Major smoking-caused disease")
+```
+
+And you can change the number of decimals displayed in the table pretty easily as well.  Generally displaying only 3 significant figures in your tables is a good idea when you have values that include decimals.
+```{r}
+nmes_data %>%
+  count(eversmk, disease) %>%
+  group_by(eversmk) %>%
+  mutate(prop = n/sum(n)) %>%
+  filter(disease == "MSCD") %>%
+  kable(format = "pipe",
+        caption = "Table 2: Proportions of individuals with and without a MSCD by smoking status",
+        digits=3)
+```
+
+You can find lots of information about fine-tuning tables using `kable()` and the `kableExtra` package [here](https://bookdown.org/yihui/rmarkdown-cookbook/tables.html).
+
+There is also another package called `pander` which makes nice tables. You can install `pander` by running `install.packages("pander")`.  It works very similarly to `kable()` and you can find more information on how to modify settings [here](http://rapporter.github.io/pander/).
+
+```{r}
+library(pander)  # usually you would want to put this at the top of your document
+nmes_data %>%
+  count(eversmk, disease) %>%
+  group_by(eversmk) %>%
+  mutate(prop = n/sum(n)) %>%
+  filter(disease == "MSCD") %>%
+  pander(caption = "Table 2: Proportions of individuals with and without a MSCD by smoking status",
+        digits=3)
+```
+
+To nicely display regression model output in a table, you can first store the results in a tidy format that can be manipulated like any other table/data in R. This is easy to do using the `tidy()` function from the `broom` package in R.  Remember, you'll have to use `install.packages("broom")` the first time you use it.
+
+```{r}
+library(broom)  # usually you would want to put this at the top of your document
+
+my_model <- glm(disease ~ eversmk + age + female, family=binomial(link="logit"), data=nmes_data)
+tidy(my_model)
+```
+
+In this tidy version of the model output, you see the results are arranged as a data set with variables names `term`, `estimate`, `std.error`, `statistic`, and `p.value`.  You can put this into a nicer table form using `kable()` or `pander()`, but can also easily change column names and add/remove columns and rows:
+```{r}
+my_model <- glm(disease ~ eversmk + age + female, family=binomial(link="logit"), data=nmes_data)
+my_model_results <- tidy(my_model)
+
+my_model_results %>%
+  kable(format = "pipe",
+        digits = 3)
+
+my_model_results %>%
+  mutate(odds.ratio = exp(estimate)) %>%  # add a column with the odds ratios
+  filter(term != "(Intercept)") %>% # remove the row with the intercept
+  select(Variable = term, `Odds Ratio` = odds.ratio, `p-value` = p.value ) %>% # select only the columns we want, rearrange columns, and change names
+  kable(format = "pipe",
+        digits = 3)
+```
+
+Some of these things can be done automatically with options in the `tidy()` function.  You can see more options using `?tidy.glm`.
+```{r}
+my_model_results <- tidy(my_model, 
+                         exponentiate = TRUE,
+                         conf.int = TRUE)
+
+my_model_results
+
+my_model_results %>%
+  filter(term != "(Intercept)") %>% # remove the row with the intercept
+  mutate(conf.int = paste0("(", round(conf.low, 2), ", ", round(conf.high, 2), ")")) %>% # combine the CI terms together into nice format 
+  select(Variable = term, `Odds Ratio` = estimate, `p-value` = p.value, `95% Confidence Interval` = conf.int) %>% # select only the columns we want, rearrange columns, and change names
+  kable(format = "pipe",
+        digits = 3,
+        align = c("l", "r", "r", "r"))
+```
+
+You can also change the variable names as well:
+```{r}
+my_model_results$term <- c("Intercept", "Ever smoker", "Age (years)", "Female")
+
+my_model_results %>%
+  filter(term != "Intercept") %>% # remove the row with the intercept
+  mutate(conf.int = paste0("(", round(conf.low, 2), ", ", round(conf.high, 2), ")")) %>% # combine the CI terms together into nice format 
+  select(Variable = term, `Odds Ratio` = estimate, `p-value` = p.value, `95% Confidence Interval` = conf.int) %>% # select only the columns we want, rearrange columns, and change names
+  kable(format = "pipe",
+        digits = 3,
+        align = c("l", "r", "r", "r"))
+
+```
+
+### Making your report a little more readable
+
+For your final assignment for this module, we will be asking you to write a report presenting your analysis with the answers to the questions posed. We want you to include all the code that you used for the analysis in the Rmd file, but not necessarily to print the output of the code to your html document. There are some very helpful tips for managing whether code and code output get printed to the screen to be found on the second page of this `rmarkdown` cheat sheet: https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf
+
+For example, if you want to create a table where you display the table, but not the code, you could put `echo=FALSE` in the top of the code chunk for that piece of code:
+```{r , echo=FALSE}
+my_model_results %>%
+  filter(term != "Intercept") %>% # remove the row with the intercept
+  mutate(conf.int = paste0("(", round(conf.low, 2), ", ", round(conf.high, 2), ")")) %>% # combine the CI terms together into nice format 
+  select(Variable = term, `Odds Ratio` = estimate, `p-value` = p.value, `95% Confidence Interval` = conf.int) %>% # select only the columns we want, rearrange columns, and change names
+  kable(format = "pipe",
+        digits = 3,
+        align = c("l", "r", "r", "r"),
+        caption = "Table 1: Logistic regression results")
+
+```
+
+Similarly, if you have a code chunk that includes necessary code (that needs to run) but you don't want to see the code or the result of running that code, you can use `echo=FALSE` and `include=FALSE` in the top of the code chunk.
+```{r , echo=FALSE, include=FALSE}
+#Some important code that needs to run but we don't need to see or see the output!
+```
+
+There are some very helpful tips found here: http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html
+
+### Selecting colors for figures
+
+If you want to control the colors you are using in your graphs, [this](https://www.r-graph-gallery.com/ggplot2-color.html) is a great detailed resource for seeing your options!
+
+You can refer to a color in many different ways, but the easiest is by name.  You can see the complete list of 657 colors available in R by typing:
+```{r eval=FALSE}
+colors()
+```
+
+You can then assign the colors directly (if using only one color) or using the `scale_fill_manual()` function within your graph if you want different colors for different groups:
+```{r}
+plot_data <- nmes_data %>%
+  count(eversmk, disease) %>%
+  group_by(eversmk) %>%
+  mutate(prop = n/sum(n)) %>%
+  filter(disease == "MSCD")
+
+ggplot(plot_data) +
+  geom_bar(aes(x=eversmk, y=prop),
+           stat="identity", fill = "deeppink")
+
+ggplot(plot_data) +
+  geom_bar(aes(x=eversmk, y=prop, fill = eversmk),
+           stat="identity") +
+  scale_fill_manual(values = c("deeppink", "chartreuse1"))
+```
+
+Sometimes it's better to leave color choices to the professionals, who know which colors look good together.  If you load the `RColorBrewer` package with `install.packages("RColorBrewer")`, you can select from within a predetermined color palatte.  You can see these color palettes [here](https://www.r-graph-gallery.com/38-rcolorbrewers-palettes.html).  You apply them in a similar way as your manual colors:
+
+```{r}
+library(RColorBrewer)
+display.brewer.all() # to see all the colors
+
+ggplot(plot_data) +
+  geom_bar(aes(x=eversmk, y=prop, fill = eversmk),
+           stat="identity") +
+  scale_fill_brewer(palette = "Dark2")
+
+```
+
+### Adding labels to figure and changing themes
+
+The cool thing about `ggplot2` is that everything just builds on top of what you've already accomplished, so if you want to change the background, you can just change the theme with one more short line of code. Here, we'll use `theme_bw()` to remove the default gray background. We'll then add an additional line of code to change the color of the bars using `scale_fill_manual()`. Finally, we will relabel the axes and title using `labs()`.
+
+```{r}
+# Change the appearance of the plot
+ggplot(plot_data) +
+  geom_bar(aes(x=eversmk, y=prop, fill=eversmk), stat="identity") +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(y="Risk of MSCD",
+       x="",
+       title="Risk of MSCD, comparing smokers to non-smokers")
+```
+
+One more important piece of controling the look of your plot in ggplot2 uses `theme()`. You can control the look of your graphing using the *many* arguments of theme. Here, we'll introduce how to change the axis text size; however, if you type `?theme` below, you'll see all of the things that can be changed on your plots using `theme()`. For a good demonstration of themes, see https://cran.r-project.org/web/packages/ggthemes/vignettes/ggthemes.html
+
+```{r}
+# Here, we'll start playing with font size
+ggplot(plot_data) +
+  geom_bar(aes(x=eversmk, y=prop, fill=eversmk), stat="identity") +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(y="Risk of MSCD",
+       x="",
+       title="Risk of MSCD, comparing smokers to non-smokers")+
+  theme(axis.text=element_text(size=12))
+```
+
+Finally, here's a link to good resource about adding lables, text, scales, and themes to your graphics: https://r4ds.had.co.nz/graphics-for-communication.html
+
+
+### Moving or removing legends  in a figure
+
+Whenever you use an aesthetic like `color` or `fill` or `shape` in the `ggplot()` function, R will automatically create a legend to the right of the graph:
+```{r}
+my_table <- nmes_data %>%
+  count(disease, eversmk) %>%
+  group_by(eversmk) %>%
+  mutate(prop = n/sum(n))
+
+ggplot(data = my_table) + 
+  geom_bar(aes(x = eversmk, y = prop, fill = disease), stat = "identity", position = "dodge")
+```
+
+You can change the name of this legend in the `labs()` function using the names of the aesthetic shown in the legend.  In this case, the legend shows the `fill` aesthetic, so we can rename it as follows:
+```{r}
+ggplot(data = my_table) + 
+  geom_bar(aes(x = eversmk, y = prop, fill = disease), stat = "identity", position = "dodge") +
+  labs(fill = "MSCD status")
+```
+
+We can also move the legend to a different location using the `legend.position` option within the `theme()` function:
+```{r}
+ggplot(data = my_table) + 
+  geom_bar(aes(x = eversmk, y = prop, fill = disease), stat = "identity", position = "dodge") +
+  labs(fill = "MSCD status") +
+  theme(legend.position = "bottom")
+```
+
+Choices for the position can be `bottom`, `top`, `right`, `left`, or `none`.  The none option is especially useful when the legend doesn't add any useful information.  Consider the graph where we only show the risk of disease, not the risk of no disease:
+```{r}
+my_table <- nmes_data %>%
+  count(disease, eversmk) %>%
+  group_by(eversmk) %>%
+  mutate(prop = n/sum(n)) %>%
+  filter(disease == "MSCD")
+
+ggplot(data = my_table) + 
+  geom_bar(aes(x = eversmk, y = prop, fill = disease), stat = "identity", position = "dodge") +
+  labs(fill = "MSCD status")
+```
+
+The legend on the size is not useful since there's only one color anyway!  So we can remove it:
+```{r}
+ggplot(data = my_table) + 
+  geom_bar(aes(x = eversmk, y = prop, fill = disease), stat = "identity", position = "dodge") +
+  labs(fill = "MSCD status") +
+  theme(legend.position = "none")
+```
+
+### Removing missing values
+
+Last week we discussed that there are missing values of the BMI variable in this dataset.  We can see there are 124 missing values below: 
+```{r}
+nmes_data %>%
+  count(is.na(bmi))
+```
+
+If you were planning to use the BMI variable in your analysis, you would need to do something to account for these missing values.  The topic of missing data could be an entire course of its own; there are many ways to handle the missing values and usually just removing the observations where there are missing values is not appropriate because it can introduce bias into our results.
+
+However much of the topic is beyond the scope of this course.  In this case, only about 3% of the observations have missing BMI data (`124/(124+3954)) = 0.0304`), so we may choose to just exclude those participants.  
+
+If you wanted to remove all participants with missing values of `bmi`, you could use the `drop_na()` function to do this:
+```{r}
+nmes_data_sub <- nmes_data %>%
+  drop_na(bmi)
+
+dim(nmes_data)
+dim(nmes_data_sub)
+nmes_data_sub %>% count(is.na(bmi))
+```
+
+I wouldn't suggest doing this unless you are planning to use BMI in your analysis, because if you do you will be excluding some data that could be used to answer your question of interest!
+
+
+## Starting Assignment 1.3
+
+Do the following to address Question 1.1: How does the risk of disease compare for smokers and otherwise similar non-smokers?
+
+1. (**Can work on this now!**) Improve your data display, if needed. Interpret your data display to answer the question. That is, what does this display say about Question 1.1? *Be sure to focus on answering the question being asked!*
+
+2. (**Can work on this now!**) Update your multivariable logistic regression model, if needed.  Interpret your coefficients and associated significance tests to answer the question.  That is, what does this model say about Question 1.1?  *Be sure to focus on answering the question being asked!*
+
+3. (**Wait for Wednesday!**) Complete a propensity score analysis to answer the question:
+
+    * Estimate propensity scores for the treatment of smoking (`eversmk`); that is, use logistic regression to estimate the probability of smoking given possible confounders.
+    * Use logistic regression with quintiles of your propensity scores to answer Question 1.1.
+    * Interpret the results -- both the relevant coefficient(s) and associated significance tests. *Be sure to focus on answering the question being asked!*
+    
+    
+4. (**Wait for Wednesday!**) Compare the results of your multivariable logistic regression with your propensity score analysis.  Are them similar? Different?  Which analysis method do you prefer and why?
+
+5. Submission notes:
+    * Submit your assignment in R Markdown through Github by Sunday (February 12, 2023) at midnight. You can find a link to create this assignment in Github on Blackboard.
+    * Post a **screenshot of your multivariable logistic regression results and your propensity score results**, on Piazza in the  "Assignment 1-3 Results" thread.  **Include your interpretations of what these two models say about Question 1.1 and any thoughts you have on which of these two analysis methods is preferred for answering Question 1.1.** 
+    * On Piazza, you are welcome to post anonymously to your classmates. You can also include comments about what your chose to do or questions you had as you were making the display and fitting your model.
+    * You may work together on this assignment, but you must submit your own assignment; please credit in your assignment anyone with whom you collaborated.
+    * Next week in class we will start with discussion of your work.
+
