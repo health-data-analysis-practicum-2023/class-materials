@@ -99,7 +99,7 @@ nmes_data <- nmes_data %>%
 
 ```{r}
 # code for logistic regression
-nmes_data<- read_csv("nmesUNPROC.csv")
+nmes_data<- read_csv("module_1/nmesUNPROC.csv")
 nmes_data$Disease = nmes_data$lc5 | nmes_data$chd5
 nmes_data$age = cut(nmes_data$age, c(0, 17, 44, 64, Inf),  include.lowest = TRUE)
 
@@ -121,6 +121,7 @@ model1 %>%
 **Risk of having MSCDs among ever smokers is 1.94 times greater than the non-smokers. There are no significant risk of diseases among ever smokers who received college education. Among ever smokers, those who graduated highschool have the risk of 1.52 times greater than the similar never smokers. Ever smokers who are in other education categories are 2.59 times more likely to have MSCDs compared to otherwise similar individuals.**
 
 ```{r echo = FALSE}
+nmes_data<- read_csv("module_1/nmesUNPROC.csv")
 nmes_data <- nmes_data %>%
   mutate(eversmk = factor(eversmk, levels = c("0", "1"), labels = c("Never smoker", "Ever smoker")), 
          #Rename eversmk variable
