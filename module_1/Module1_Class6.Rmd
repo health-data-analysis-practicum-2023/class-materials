@@ -502,7 +502,7 @@ Do the following to address Question 1.1: How does the risk of disease compare f
 4. Compare the results of your multivariable logistic regression with your propensity score analysis.  Are them similar? Different?  Which analysis method do you prefer and why?
 
 5. Submission notes:
-    * Submit your assignment in R Markdown through Github by Sunday (February 12, 2023) at midnight. You can find a link to create this assignment in Github on Blackboard.
+    * Submit your assignment in R Markdown through Github by Sunday (February 12, 2023) at midnight. You can find a link to create this assignment in Github on Canvas
     * Post a **screenshot of your multivariable logistic regression results and your propensity score results**, on Piazza in the  "Assignment 1-3 Results" thread.  **Include your interpretations of what these two models say about Question 1.1 and any thoughts you have on which of these two analysis methods is preferred for answering Question 1.1.** 
     * On Piazza, you are welcome to post anonymously to your classmates. You can also include comments about what your chose to do or questions you had as you were making the display and fitting your model.
     * You may work together on this assignment, but you must submit your own assignment; please credit in your assignment anyone with whom you collaborated.
