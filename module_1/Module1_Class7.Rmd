@@ -206,6 +206,32 @@ nmes_data <- nmes_data %>%
                           labels=c("No MSCD", "MSCD")))
 ```
 
+### Propensity scores with smaller groups
+
+Why does it not really make a difference if you use logistic regression or propensity score groups when you have only two binary variables?
+
+First, we use logistic regression to model the log odds of ever smoking based on female and poor:
+```{r}
+prop_model <- glm(eversmk ~ female + poor, family = binomial(link="logit"), data=nmes_data, na.action = na.exclude)
+
+nmes_data <- nmes_data %>%
+  mutate(ps = predict(prop_model, type = "response"))
+
+
+ggplot(data = nmes_data) +
+  geom_jitter(mapping = aes(x=ps, y=disease, color=eversmk), alpha = .4) 
+```
+
+Note that propensity score groups are completely determined by the female and poor variables:
+```{r}
+ggplot(data = nmes_data) +
+  geom_jitter(mapping = aes(x=ps, y=disease, color=female, shape = poor), alpha = .4) 
+
+```
+
+If we want to have at least four propensity score groups, this means that we would be splitting people into the exact groups they would be split into by the sex/poverty status variables, not providing any benefit. 
+
+
 ### In-line code (including code in within the text)
 
 In your written interpretations of your regression results, you all refer to values that are also presented in your tables of coefficients or odds ratios.  Instead of copying/pasting or typing these numbers into the text, you can refer directly to the values in your tables within your text.  This is called "in-line" code, and it is done using: tick r.
