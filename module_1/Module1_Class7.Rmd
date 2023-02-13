@@ -139,7 +139,7 @@ We will answer these questions using data from the National Medical Expenditures
 
 ## Discussion of propensity scores verses logistic regression for Question 1-1
 
-In your small groups, take 20 minutes to discuss the results of your propensity score analysis and multivariable logistic regression to answer Question 1.1.  Feel free to refer to the [Piazza thread](https://piazza.com/class/ky8vi7lw6ek6ts?cid=23){target="_blank"} with all student results, but below you can find pasted some of the student comments comparing the two analysis methods: 
+In your small groups, take 20 minutes to discuss the results of your propensity score analysis and multivariable logistic regression to answer Question 1.1.  Feel free to refer to the [Piazza thread](https://piazza.com/class/ld7tidrzlpp70o/post/17){target="_blank"} with all student results, but below you can find pasted some of the student comments comparing the two analysis methods: 
 
 * Both of these analysis methods can sufficiently answer Question 1.1. If I had to make an educated guess on which of the two methods is preferred for answering Question 1.1, I would say that conducting logistic regression with propensity scores is preferred. In this method, you can produce quintiles with a similar propensity score with respect to many confounders with in a way that is relatively easy to interpret and conceptualize.  However, with multivariable logistic regression, many different strata are required when you incorporate more and more variables you incorporate into your model. Having so many strata can become difficult to manage.
 
