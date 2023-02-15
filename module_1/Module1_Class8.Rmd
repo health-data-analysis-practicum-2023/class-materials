@@ -214,7 +214,7 @@ tidy(model_ps_strata, exponentiate = TRUE, conf.int = TRUE )
 
 ```
 
-**We estimate the odds of disease for male smokers are 2 times the odds for male non-smokers of similar ages (95% CI for OR: 1.25 to 3.18).**
+**We estimate the odds of disease for male smokers are 2 times the odds for male non-smokers of similar ages (95% CI for OR: 1.27 to 3.24).**
 
 Now we do this again for the female individuals:
 ```{r}
@@ -245,7 +245,7 @@ tidy(model_ps_strata, exponentiate = TRUE)
 tidy(model_ps_strata, exponentiate = TRUE, conf.int = TRUE )
 ```
 
-**We estimate the odds of disease for female smokers are 1.86 times the odds for female non-smokers of similar ages (95% CI for OR: 1.29 to 2.67).**
+**We estimate the odds of disease for female smokers are 1.86 times the odds for female non-smokers of similar ages (95% CI for OR: 1.29 to 2.68).**
 
 In these subgroups, it doesn't appear there is effect modification, because although the estimated odds ratios are different, the confidence intervals for these odds ratios overlap.
 
@@ -253,7 +253,7 @@ In these subgroups, it doesn't appear there is effect modification, because alth
 
 We can consider effect modification directly in our overall model by including an interaction term between our effect modifier and the treatment variable along with propensity adjustment.  
 
-To do this, we first construct propensity scores, making sure to include the effect modifier in the propensity score calculation:
+To do this, we first construct propensity scores, **making sure to include the effect modifier in the propensity score calculation**:
 ```{r}
 my_data <- nmes_data
 
@@ -324,7 +324,8 @@ You should also do the following:
 * Provide a caption for your data displays.
 * Write up your results in a few paragraphs to answer both questions.  In your write-up, you should refer to your data displays and your analysis results.  Be numerate!
 * Here's a great resource for tables/figures for scientific papers:
-[http://abacus.bates.edu/~ganderso/biology/resources/writing/HTWtablefigs.html](http://abacus.bates.edu/~ganderso/biology/resources/writing/HTWtablefigs.html)
+[http://abacus.bates.edu/~ganderso/biology/resources/writing/HTWtablefigs.html](http://abacus.bates.edu/~ganderso/biology/resources/writing/HTWtablefigs.html){target="_blank"}
+* And don't forget the great doc your TAs put together for you which also has some awesome tips: [link](https://nam02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.google.com%2Fdocument%2Fd%2F1kLpNHXcXLg0YFQ_pK759-Ck4rzPq-40-u5DJMZ8Lobo%2Fedit%3Fusp%3Dsharing&data=05%7C01%7Cphbiostats%40jhu.edu%7C52be12aef0534ff578e608db0a18493e%7C9fa4f438b1e6473b803f86f8aedf0dec%7C0%7C0%7C638114871644527850%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=bwrB6jfz7Xd8%2Bl5%2FmvfxsxxcqX6xWT0tfW3i9%2BYL2SQ%3D&reserved=0){target="_blank"}
 
 Submit your data display in R Markdown through Github by Monday (February 20, 2023) at midnight.
 
