@@ -23,7 +23,7 @@ Hypertension is one of the most common diseases in the world. It has been associ
 
 In this module, we will explore the relationship between hypertension and a variety of risk factors.
 
-This case study introduces survey methods for logistic regression and compares the results from survey-weighted logistic regression to standard logistic regression. The plot below visualizes the comparison between these two methods; it shows the estimated coefficients (with standard error) from each method for the risk factors under consideration.  Note that both the estimates and their standard errors are different when using [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression){target="_blank"} compared to [survey-weighted logistic regression](http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=9591E971AF4061BBF8F98083422FF313?doi=10.1.1.151.6423&rep=rep1&type=pdf){target="_blank"}. We will discuss later which model is a better choice for this analysis.
+This case study introduces survey methods for logistic regression and compares the results from survey-weighted logistic regression to standard logistic regression. The plot below visualizes the comparison between these two methods; it shows the estimated coefficients (with standard error) from each method for the risk factors under consideration.  Note that both the estimates and their standard errors are different when using [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression){target="_blank"} compared to [survey-weighted logistic regression](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=8dc703bdec2bd009e3bc79ba4d38f28ad1e051a2){target="_blank"}. We will discuss later which model is a better choice for this analysis.
 
 <center>
 ![](data/Finalplot.png)
