@@ -86,7 +86,7 @@ library(haven)
 library(broom)
 library(plotrix)
 
-dat <- read_sas('./data/d.sas7bdat')
+dat <- read_sas('module_2/data/d.sas7bdat')
 dim(dat)
 ```
 
