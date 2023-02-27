@@ -523,14 +523,10 @@ Comparing the distribution of hypertension by smoking status, a higher proportio
 
 <details> <summary> A few thoughts for when we return from our groups </summary>
 
-### About that smoking variable...
 
- There was a mistake in my code from a previous lecture for how I recoded the `SMOKER3CAT` variable. It has been corrected below to match what is in the [Variable Codebook](https://med.nyu.edu/departments-institutes/population-health/divisions-sections-centers/epidemiology/sites/default/files/nyc-hanes-datasets-and-resources-public-dataset-codebook.pdf){target="_blank"}. Yi or I will also include a modification to the code in your assignments when we grade them this week, although not many of you are currently using this variable for your visualizations. But if you do use it in the future, you'll want to make sure it is coded correctly!
-
-### Other notes
-
+* *IMPORTANT*: You may have noticed something unintuitive about smoking status and hypertension risk. There was a mistake in my code from a previous lecture for how I recoded the `SMOKER3CAT` variable. It has been corrected below to match what is in the [Variable Codebook](https://med.nyu.edu/departments-institutes/population-health/divisions-sections-centers/epidemiology/sites/default/files/nyc-hanes-datasets-and-resources-public-dataset-codebook.pdf){target="_blank"}. Yi or I will also include a modification to the code in your assignments when we grade them this week, although not many of you are currently using this variable for your visualizations. But if you do use it in the future, you'll want to make sure it is coded correctly!
 * The hypertension legend does not need to be displayed on each panel of multi-panel figures. In fact, it does not need to be displayed at all if you only plot risk of hypertension (and not also risk of no-hypertension).
-* The order of some levels for the factors could be made more intuitive (e.g. fruit consumption variable); but mostly the variable coding looks good, I think!
+* When plotting multi-panel figures, you may need to specify the figure width in the code chunk header to avoid the plots looking compressed. See Example 3 for an example of how to do this.
 * Something to think about for people interested in race or socio-economic status: Age/income/education are all associated with socio-economic status, as is race. You'll want to think about which variables to include to examine the particular relationship you are interested in.
 
 Some limitations/points for discussion regarding race and sex: both are extremely commonly used in epidemiological studies, like the one we are discussing here. Both have limitations in how they are measured and how they are used and understood in a data analysis. We should always strive to do our best in discussing and working with these variables. For example, in our case studies, we include a statement like:
