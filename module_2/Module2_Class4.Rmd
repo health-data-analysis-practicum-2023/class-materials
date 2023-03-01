@@ -155,12 +155,12 @@ p3 <- hy_p_df %>%
 ```
 
 Old version with `ggarrange`:
-```{r}
+```{r, fig.width= 15}
 ggarrange(p1, p2, p3, ncol=3, nrow=1)
 ```
 
 New version with `patchwork`:
-```{r}
+```{r, fig.width= 15}
 p1+p2+p3+patchwork::plot_layout(ncol=3,heights=c(4,2,2))
 ```
 
