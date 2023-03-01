@@ -484,7 +484,7 @@ g1 <- svyglm(hypertension ~
              design = h_design_nona)
 g1_res <- tidy(g1, exponentiate = TRUE)
 
-g1_res %>% select(Variable = term, OR = estimate, `p-value` = p.value) %>% kable(digits = 2)
+g1_res %>% select(Variable = term, OR = estimate, `p-value` = p.value) %>% pander(digits = 2)
 ```
 
 One interesting thing is that both the coefficients and p-values for the `smoking` variables are different than in our simple model.  Why did this happen? Remember that with other variables in the model, our interpretation of the coefficients for smoking changes.  We now have to interpret them as describing the relationship between smoking and hypertension *while holding the other variables in the model constant.*  If the other variables in the model are also related to `smoking`, then the relationship between smoking and hypertension may be different once we account for the other variables compared to the relationship of smoking on its own.
