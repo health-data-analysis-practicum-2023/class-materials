@@ -55,6 +55,7 @@ library(haven)
 library(broom)
 library(plotrix)
 library(patchwork)
+library(pander)
 
 dat <- read_sas('./module_2/data/d.sas7bdat')
 dim(dat)
