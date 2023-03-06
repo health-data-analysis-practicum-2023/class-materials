@@ -257,6 +257,8 @@ Recall Question 2.2: How do our estimates from survey-weighted logistic regressi
 
 To answer this, use your final model from your survey-weighted analysis and fit a standard (unweighted) logistic regression instead. How might you want to compare the results of these two models? A table? Some kind of visualization?
 
+Take a look at the visualization below. What are things you think it does well in terms of clearly showing the differences between the weighted and unweighted model results and their statistical significance? What things could be improved? What elements do you think are important or necessary to include in any comparison of the two models?
+
 <center>
 ![](data/Finalplot.png)
 </center>
