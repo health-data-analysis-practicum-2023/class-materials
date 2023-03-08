@@ -226,11 +226,20 @@ other_table <- tidy(htn_model, exponentiate = TRUE, conf.int = TRUE)%>%
   mutate("95% confidence interval" = paste0("(", round(conf.low, digits = 3), ", ", round(conf.high, digits = 3), ")")) %>%
       select(Exposure = term, 'Odds Ratio' = estimate, `p-value` = p.value, "95% confidence interval") %>% mutate(Exposure = c("Vigorous activity", "One-year age increase", "One-unit BMI increase")) %>%
   kable(format = "html", align = 'r', caption = "Weighted logistic regression model examining the effect of exposures on risk of hypertension, controlled for race and diet")
+```
 
+
+```{r}
 race_table %>%
   kable_minimal(full_width = F, position = "float_left", c("striped", "hover"))
+```
+
+```{r}
 diet_table %>%
   kable_minimal(full_width = F, position = "right", c("striped", "hover"))
+```
+
+```{r}
 other_table %>%
   kable_minimal(full_width = F, position = "center", c("striped", "hover"))
 
