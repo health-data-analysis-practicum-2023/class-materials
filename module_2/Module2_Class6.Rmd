@@ -229,13 +229,13 @@ other_table <- tidy(htn_model, exponentiate = TRUE, conf.int = TRUE)%>%
 ```
 
 
-```{r}
+```{r, echo = FALSE}
 race_table %>%
-  kable_minimal(full_width = F, position = "left", c("striped", "hover"))
-other_table %>%
-  kable_minimal(full_width = F, position = "center", c("striped", "hover"))
+  kable_minimal(full_width = F, position = "float_left", c("striped", "hover"))
 diet_table %>%
   kable_minimal(full_width = F, position = "right", c("striped", "hover"))
+other_table %>%
+  kable_minimal(full_width = F, position = "center", c("striped", "hover"))
 
 ```
 
