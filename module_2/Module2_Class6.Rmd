@@ -373,14 +373,6 @@ Finally, start working on Question 2.2, comparing the survey-weighted results to
 
 It is time to start thinking about your final projects, which will be the focus of the course after we wrap up Module 2. 
 
-<center>
-![](data/Project1.png)
-</center>
-
-<center>
-![](data/Project2.png)
-</center>
-
 
 ### Project structure
 
