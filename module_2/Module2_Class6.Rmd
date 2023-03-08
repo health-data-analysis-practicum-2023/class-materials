@@ -337,7 +337,7 @@ Here is an example of combining these results:
      group_by(g1_both$method)) +
      geom_vline(xintercept = 0, linetype = "dashed") +
      geom_errorbarh(aes(estimate, term, xmin = `2.5 %`, 
-     xmax = `97.5 %`, color = factor(method),width = 0.3), size = 0.8)+
+     xmax = `97.5 %`, color = factor(method)), linewidth = 0.8)+
      geom_point(aes(color = factor(method),
                     shape = factor(method)),size = 3)+
     theme(axis.title.x = element_blank(),
