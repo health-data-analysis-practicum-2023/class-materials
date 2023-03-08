@@ -328,37 +328,9 @@ g1_both<-rbind(g1_res, g1_noWt_res)
 
 ```
 
-We can try a couple different ways of combining these results:
+Here is an example of combining these results:
 
 ```{r}
-g1_both %>% ggplot(aes(x=estimate, y=term))+
-    xlab("Difference in log odds (95% Confidence Interval)")+
-    geom_errorbarh(aes(xmin=`2.5 %`, xmax=`97.5 %`,col=method),width=0.5,cex=1)+ 
-    facet_wrap(~term,strip.position="left",nrow=9) +
-    geom_vline(xintercept = 0, linetype = "dashed") +
-    geom_point(aes(color = factor(method),
-                    shape = factor(method)),size = 3)+
-    theme(plot.title=element_text(size=16,face="bold"),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.x=element_text(face="bold"),
-        axis.title=element_text(size=12,face="bold"),
-        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold"))
- 
-
-g1_both %>% ggplot(aes(x=estimate, y=term))+
-    xlab("Difference in log odds (95% Confidence Interval)")+
-    geom_errorbarh(aes(xmin=`2.5 %`, xmax=`97.5 %`,col=method),width=0.5,cex=1)+ 
-    facet_wrap(~term,strip.position="left",nrow=9, scales="free_x") +
-    geom_vline(xintercept = 0, linetype = "dashed") +
-    geom_point(aes(color = factor(method),
-                    shape = factor(method)),size = 3)+
-    theme(plot.title=element_text(size=16,face="bold"),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        axis.text.x=element_text(face="bold"),
-        axis.title=element_text(size=12,face="bold"),
-        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold"))
 
 
  g1_both %>% ggplot(aes(x = estimate, y = term),
@@ -374,21 +346,9 @@ g1_both %>% ggplot(aes(x=estimate, y=term))+
    theme_minimal()
 
  
-g1_both %>% filter(term != "(Intercept)") %>% ggplot(aes(x = estimate, y = term),
-     group_by(g1_both$method)) +
-     geom_vline(xintercept = 0, linetype = "dashed") +
-     geom_errorbarh(aes(estimate, term, xmin = `2.5 %`, 
-     xmax = `97.5 %`, color = factor(method),width = 0.3), size = 0.8)+
-     geom_point(aes(color = factor(method),
-                    shape = factor(method)),size = 3)+
-    theme(axis.title.x = element_blank(),
-    axis.title.y = element_blank()) +
-    ggtitle(expression(atop(bold("95% condfidence interval"))))+
-   theme_minimal()
-
 ```
 
-Note that these are not finalized -- they are just some suggestions to help get you started!
+Note that this are not finalized -- it is just a suggestion to help get you started!
 
 
 ## Assignment 2.3
