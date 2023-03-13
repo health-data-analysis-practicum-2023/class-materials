@@ -488,21 +488,6 @@ library(jtools)
 plot_summs(g1, g1_noWt, scale = TRUE, model.names = c("Survey-Weighted", "Non Survey-Weighted"))
 ```
 
-#### Example 5
-
-This example uses a function from the `sjPlot` package, which you can read more about [here](https://strengejacke.github.io/sjPlot/){target="_blank"}. Again, this function is powerful, but there are again drawbacks to using this kind of pre-packaged approach.
-
-```{r , echo = FALSE}
-library(sjPlot)
-
-dlogp <- plot_model(g1, show.values = TRUE, value.offset = .3, title = "Weighted: Hypertension Odds ratio and Signficance per Term", sort.est = TRUE, auto.label=FALSE, axis.title="Odds Ratio", df.method = "wald")
-dlogp 
-
-dlogp <- plot_model(g1_noWt, show.values = TRUE, value.offset = .3, title = "Unweighted: Hypertension Odds ratio and Signficance per Term", sort.est = TRUE, auto.label=FALSE, axis.title="Odds Ratio", df.method = "wald")
-dlogp 
-
-```
-
 
 
 
