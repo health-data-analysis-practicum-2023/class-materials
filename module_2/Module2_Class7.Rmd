@@ -477,9 +477,12 @@ g1_both %>%
 ```
 
 
-
-
 #### Example 4
+
+I can't put the code here yet, but take a look at [Anon Calc on Piazza](https://piazza.com/class/ld7tidrzlpp70o/post/30_f9){target="_blank"}. How do you think the variables in the plot are ordered?
+
+
+#### Example 5
 
 This example uses a function from the `jtools` package, which you can read more about [here](https://jtools.jacob-long.com){target="_blank"}. We also need to install the `ggstance` and `broom.mixed` packages to get this to work without an error. This function is powerful, but does sweep some things under the rug, so you might want to be careful using it. Once you have discussed how to improve the plot, see if you can figure out an additional argument to pass to the function to improve it.
 
@@ -527,7 +530,9 @@ pander(g1_noWt_res)
 
 Now that we have both versions of the results, we can work on combining them in different ways to make some tables.
 
-We want to start by joining the results from the two tables.
+One of you posted an example of a table comparison on [Piazza](https://piazza.com/class/ld7tidrzlpp70o/post/30_f11){target="_blank"}. What are some things that work well or could be improved with this set of tables?
+
+To show the results in the same table, we want to start by joining the results from the two tables.
 ```{r}
 g1_join <- inner_join(g1_res, g1_noWt_res, by = "term", suffix = c(".Wt", ".noWt"))
 ```
