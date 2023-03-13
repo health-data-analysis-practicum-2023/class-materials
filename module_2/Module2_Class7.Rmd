@@ -495,10 +495,10 @@ This example uses a function from the `sjPlot` package, which you can read more 
 ```{r , echo = FALSE}
 library(sjPlot)
 
-dlogp <- plot_model(g1, show.values = TRUE, value.offset = .3, title = "Weighted: Hypertension Odds ratio and Signficance per Term", sort.est = TRUE, auto.label=FALSE, axis.title="Odds Ratio")
+dlogp <- plot_model(g1, show.values = TRUE, value.offset = .3, title = "Weighted: Hypertension Odds ratio and Signficance per Term", sort.est = TRUE, auto.label=FALSE, axis.title="Odds Ratio", df.method = "wald")
 dlogp 
 
-dlogp <- plot_model(g1_noWt, show.values = TRUE, value.offset = .3, title = "Unweighted: Hypertension Odds ratio and Signficance per Term", sort.est = TRUE, auto.label=FALSE, axis.title="Odds Ratio")
+dlogp <- plot_model(g1_noWt, show.values = TRUE, value.offset = .3, title = "Unweighted: Hypertension Odds ratio and Signficance per Term", sort.est = TRUE, auto.label=FALSE, axis.title="Odds Ratio", df.method = "wald")
 dlogp 
 
 ```
@@ -507,6 +507,8 @@ dlogp
 
 
 ### An alternative: example tables
+
+We know how to create nice tables of the model outputs from each method on its own.
 
 ```{r }
 ### survey-weighted logistic regression
@@ -519,7 +521,6 @@ g1 <- svyglm(hypertension ~
 g1_res <- tidy(g1, exponentiate = TRUE, conf.int = TRUE)
 ```
 
-How would we go about making a figure like this? We first need to create a data frame with odds ratios and confidence intervals for the two methods. Recall that we created a nice data frame of the output of our survey-weighted glm using the `tidy` function:
 
 ```{r}
 pander(g1_res)
@@ -563,7 +564,7 @@ comp_tbl
 
 ```
 
-One thing I would like to improve about this plot is the way the p-values are displayed as 0's. There are several approaches to changing this; I am showing one here using the `formatC` function.  You can see some further examples of how to play around with this [here](https://stackoverflow.com/questions/39623636/forcing-r-output-to-be-scientific-notation-with-at-most-two-decimals){target="_blank"}.
+One thing I would like to improve about this table is the way the p-values are displayed as 0's. There are several approaches to changing this; I am showing one here using the `formatC` function.  You can see some further examples of how to play around with this [here](https://stackoverflow.com/questions/39623636/forcing-r-output-to-be-scientific-notation-with-at-most-two-decimals){target="_blank"}.
 
 
 ```{r}
