@@ -179,8 +179,8 @@ names(g1_both)[names(g1_both) == "estimate"] <- "odds.ratio"
 
 #data visualizations comparing the results separating categorical and continuous variables 
 g1_both %>% 
-  ggplot(aes(x = odds.ratio, y = term), group_by(g1_both$method)) +
-     geom_vline(xintercept = 0, linetype = "dashed") +
+  ggplot(aes(x = odds.ratio, y = term), group_by(method)) +
+     geom_vline(xintercept = 1, linetype = "dashed") +
      geom_errorbarh(aes(y=term, xmin = conf.low, 
      xmax = conf.high, color = method), linewidth = 0.8, position="dodge")+
      geom_point(aes(color = method,
@@ -193,8 +193,8 @@ g1_both %>%
 
 #data visualizations comparing the results separating categorical and continuous variables 
 g1_both %>% 
-  ggplot(aes(x = odds.ratio, y = fct_reorder(term, odds.ratio)), group_by(g1_both$method)) +
-     geom_vline(xintercept = 0, linetype = "dashed") +
+  ggplot(aes(x = odds.ratio, y = fct_reorder(term, odds.ratio)), group_by(method)) +
+     geom_vline(xintercept = 1, linetype = "dashed") +
      geom_errorbarh(aes(y=term, xmin = conf.low, 
      xmax = conf.high, color = method), linewidth = 0.8, position="dodge")+
      geom_point(aes(color = method,
