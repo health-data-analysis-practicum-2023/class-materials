@@ -68,6 +68,23 @@ Today, we will continue to work toward answering this by learning how to:
 
 ## Example of reordering factor levels
 
+```{r, echo = FALSE}
+library(tidyverse)  
+library(knitr)  
+library(ggpubr)
+library(ggrepel)
+library(tidyverse)
+library(kableExtra)
+library(survey)
+library(haven)
+library(broom)
+library(plotrix)
+library(pander)
+library(gridExtra)
+
+dat <- read_sas('./module_2/data/d.sas7bdat')
+dim(dat)
+```
 
 ```{r, echo=FALSE}
 
