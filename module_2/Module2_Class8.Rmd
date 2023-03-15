@@ -195,7 +195,7 @@ g1_both %>%
 g1_both %>% 
   ggplot(aes(x = odds.ratio, y = fct_reorder(term, odds.ratio)), group_by(method)) +
      geom_vline(xintercept = 1, linetype = "dashed") +
-     geom_errorbarh(aes(y=term, xmin = conf.low, 
+     geom_errorbarh(aes(y=fct_reorder(term, odds.ratio), xmin = conf.low, 
      xmax = conf.high, color = method), linewidth = 0.8, position="dodge")+
      geom_point(aes(color = method,
                     shape = method), size = 3, position=position_dodge(width=0.9))+
@@ -205,7 +205,7 @@ g1_both %>%
   ylab("categorical terms")
 
 g1_both %>%
-  ggplot(aes(x = odds.ratio, y = fct_reorder(term, odds.ratio), color = method)) +
+  ggplot(aes(x = odds.ratio, y = fct_reorder(term, odds.ratio), group_by(method), color = method)) +
   geom_vline(xintercept = 1,
              linetype = "dashed") +
   geom_errorbarh(aes(xmin = conf.low, 
@@ -213,11 +213,11 @@ g1_both %>%
                      width = 0.3),
                  height = 0.5, 
                  size = 0.8, position = "dodge") +
-  geom_point(aes(color = factor(method), size = 3, position=position_dodge(width=0.9)) +
-  scale_color_manual(values = c("#0072B2", "#f08080"))) +
+  geom_point(aes(color = method, shape = method), size = 3, position=position_dodge(width=0.9)) +
+  scale_color_manual(values = c("#0072B2", "#f08080")) +
   scale_shape_manual(values = c(19, 17)) +
   theme_minimal() +
-  labs(title = "Comparison of Survey-Weighted and Non-Survery Weighted Regression Analysis",
+  labs(title = "Comparison of Survey-Weighted and\nNon-Survey Weighted Regression Analysis",
        y = "Variable",
        x = "Odds Ratio Estimate",
        caption = "Figure 4: Odds Ratio Estimates of Survey-Weighted and Non-Survery-Weighted Regression Analysis"
