@@ -31,7 +31,7 @@ Your final project will have the following pieces:
   * Outcome variable
   * Predictor variable(s) of primary interest
   * Potential confounders
-  * Potention effect modifiers
+  * Potential effect modifiers
 * Directed acyclic graph (DAG) showing the hypothesized relationships of interest and including potential confounders and effect modifiers
 * A primary analysis to address the question of interest
 * Communication of results in tables and figures
